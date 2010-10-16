@@ -1,15 +1,17 @@
 ---
 abstract: 'Interface to Rackspace CloudFiles service'
 author:
+  - 'Fork by Christiaan Kras <ckras@cpan.org>'
   - 'Christiaan Kras <ckras@cpan.org>'
 build_requires:
   ExtUtils::MakeMaker: 6.42
+  File::Stat: 0
   Test::Exception: 0
   Test::More: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.92'
+generated_by: 'Module::Install version 1.00'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -37,4 +39,4 @@ resources:
   bugtracker: http://github.com/Htbaa/WebService-Rackspace-CloudFiles/issues
   license: http://dev.perl.org/licenses/
   repository: http://github.com/Htbaa/WebService-Rackspace-CloudFiles
-version: 1.00
+version: 1.01
