@@ -75,6 +75,22 @@ sub _url {
     return $url;
 }
 
+sub _cdn_url {
+    my($self,$ssl) = @_;
+    $ssl ||= 0;
+    return sprintf('%s/%s',
+        $ssl ? $self->container->cdn_ssl_uri : $self->container->cdn_uri,
+        $self->name);
+}
+
+sub cdn_url {
+    return shift->_cdn_url;
+}
+
+sub cdn_ssl_url {
+    return shift->_cdn_url(1);
+}
+
 sub head {
     my $self    = shift;
     my $request = HTTP::Request->new( 'HEAD', $self->_url,
@@ -156,6 +172,17 @@ sub delete {
         [ 'X-Auth-Token' => $self->cloudfiles->token ] );
     my $response = $self->cloudfiles->_request($request);
     confess 'Object ' . $self->name . ' not found' if $response->code == 404;
+    confess 'Unknown error' if $response->code != 204;
+}
+
+sub purge_cdn {
+    my ($self, @emails) = @_;
+    my $request = HTTP::Request->new( 'DELETE', $self->_url,
+        [ 'X-Auth-Token' => $self->cloudfiles->token,
+          'X-Purge-Email' => join ', ', @emails] );
+    my $response = $self->cloudfiles->_request($request);
+    confess 'Not Found' if $response->code == 404;
+    confess 'Unauthorized request' if $response->code == 403;
     confess 'Unknown error' if $response->code != 204;
 }
 
@@ -419,6 +446,20 @@ Deletes an object:
 
   $object->delete;
 
+=head2 purge_cdn
+
+Purges an object in a CDN enabled container without having to wait for the TTL
+to expire. 
+
+  $object->purge_cdn;
+
+Purging an object in a CDN enabled container may take long time. So you can
+optionally provide one or more emails to be notified after the object is
+fully purged. 
+
+  my @emails = ('foo@example.com', 'bar@example.com');
+  $object->purge_cdn(@emails);
+
 =head2 put
 
 Creates a new object:
@@ -471,16 +512,26 @@ This is mentioned only because if you access your data through a different
 language or interface, your metadata keys will contain dashes instead of 
 underscores.
 
+=head2 cdn_url
+
+Retrieve HTTP CDN url to object.
+
+=head2 cdn_ssl_url
+
+Retrieve HTTPS CDN url to object.
+
 =head1 SEE ALSO
 
 L<WebService::Rackspace::CloudFiles>, L<WebService::Rackspace::CloudFiles::Container>.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
+Christiaan Kras <ckras@cpan.org>.
 Leon Brocard <acme@astray.com>.
 
 =head1 COPYRIGHT
 
+Copyright (C) 2010-2011, Christiaan Kras
 Copyright (C) 2008-9, Leon Brocard
 
 =head1 LICENSE

@@ -7,12 +7,11 @@ use Test::Exception;
 use Digest::MD5::File qw(file_md5_hex);
 use File::stat;
 use File::Slurp;
+use LWP::UserAgent;
 use WebService::Rackspace::CloudFiles;
 
 unless ( $ENV{'CLOUDFILES_EXPENSIVE_TESTS'} ) {
     plan skip_all => 'Testing this module for real costs money.';
-} else {
-    plan tests => 55;
 }
 
 my $cloudfiles = WebService::Rackspace::CloudFiles->new(
@@ -21,8 +20,6 @@ my $cloudfiles = WebService::Rackspace::CloudFiles->new(
     location => $ENV{'CLOUDFILES_LOCATION'},
 );
 isa_ok( $cloudfiles, 'WebService::Rackspace::CloudFiles' );
-
-
 
 my $container = $cloudfiles->create_container( name => 'testing' );
 isa_ok( $container, 'WebService::Rackspace::CloudFiles::Container', 'container' );
@@ -94,6 +91,20 @@ is( $object->content_type, 'binary/octet-stream',
     'list has right content type' );
 isa_ok( $object->last_modified, 'DateTime', 'list has a last modified' );
 
+# Testing some CDN features
+$container->cdn_enable;
+ok($container->cdn_uri, 'CDN HTTP URL');
+ok($container->cdn_ssl_uri, 'CDN HTTPS URL');
+ok($one->cdn_url, 'CDN HTTP URL for object');
+ok($one->cdn_ssl_url, 'CDN HTTPS URL for object');
+
+my $ua = LWP::UserAgent->new;
+my $res = $ua->head($one->cdn_url);
+ok($res->is_success, 'Requesting CDN HTTP URL');
+
+#not purging in these tests because the $one->delete call will fail
+#ok($one->purge_cdn, 'Purging CDN Object');
+
 $one->delete;
 throws_ok(
     sub { $one->get },
@@ -122,7 +133,7 @@ is( $another_two->etag,
     '855a8e4678542fd944455ee350fa8147',
     'got etag for two.txt'
 );
-is( $another_two->content_type, 'text/plain; charset=UTF-8',
+is( $another_two->content_type, 'text/plain',
     'got content_type for two.txt' );
 isa_ok( $another_two->last_modified, 'DateTime',
     'got last_modified for two.txt' );
@@ -147,9 +158,9 @@ is( $and_another_two->etag,
     '855a8e4678542fd944455ee350fa8147',
     'got etag for two.txt'
 );
-# Strange but true, the returned header contains a double charset...
+
 is( $and_another_two->content_type,
-    'text/plain; charset=UTF-8; charset=UTF-8', 'got content_type for two.txt' );
+    'text/plain', 'got content_type for two.txt' );
 isa_ok( $and_another_two->last_modified,
     'DateTime', 'got last_modified for two.txt' );
 
@@ -160,9 +171,13 @@ is( $object->name, 'two.txt', 'list has right name' );
 is( $object->etag, '855a8e4678542fd944455ee350fa8147',
     'list has right etag' );
 is( $object->size,         '11',         'list has right size' );
-is( $object->content_type, 'text/plain; charset=UTF-8', 'list has right content type' );
+is( $object->content_type, 'text/plain', 'list has right content type' );
 isa_ok( $object->last_modified, 'DateTime', 'list has a last modified' );
 
 $another_two->delete;
 
+#not purging in these tests because the $container->delete call would fail
+#ok($container->purge_cdn, 'Purging CDN Container');
 $container->delete;
+
+done_testing();

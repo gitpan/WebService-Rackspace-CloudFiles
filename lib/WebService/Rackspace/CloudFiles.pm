@@ -8,7 +8,8 @@ use WebService::Rackspace::CloudFiles::Object;
 use LWP::ConnCache::MaxKeepAliveRequests;
 use LWP::UserAgent::Determined;
 use URI::QueryParam;
-our $VERSION = '1.02';
+use JSON::Any;
+our $VERSION = '1.03';
 
 my $DEBUG = 0;
 my %locations = (
@@ -21,9 +22,10 @@ has 'key'     => ( is => 'ro', isa => 'Str', required => 1 );
 has 'location'=> ( is => 'ro', isa => 'Str', required => 0, default => 'usa');
 has 'timeout' => ( is => 'ro', isa => 'Num', required => 0, default => 30 );
 
-has 'ua'          => ( is => 'rw', isa => 'LWP::UserAgent', required => 0 );
-has 'storage_url' => ( is => 'rw', isa => 'Str',            required => 0 );
-has 'token'       => ( is => 'rw', isa => 'Str',            required => 0 );
+has 'ua'                 => ( is => 'rw', isa => 'LWP::UserAgent', required => 0 );
+has 'storage_url'        => ( is => 'rw', isa => 'Str',            required => 0 );
+has 'cdn_management_url' => ( is => 'rw', isa => 'Str',            required => 0 );
+has 'token'              => ( is => 'rw', isa => 'Str',            required => 0 );
 
 __PACKAGE__->meta->make_immutable;
 
@@ -73,9 +75,12 @@ sub _authenticate {
         || confess 'Missing storage url';
     my $token = $response->header('X-Auth-Token')
         || confess 'Missing auth token';
+    my $cdn_management_url = $response->header('X-CDN-Management-Url')
+        || confess 'Missing CDN management url';
 
     $self->storage_url($storage_url);
     $self->token($token);
+    $self->cdn_management_url($cdn_management_url);
 }
 
 sub _request {
@@ -101,19 +106,16 @@ sub _request {
 
 sub containers {
     my $self    = shift;
-    my $request = HTTP::Request->new( 'GET', $self->storage_url,
+    my $request = HTTP::Request->new( 'GET', 
+        $self->storage_url . '?format=json',
         [ 'X-Auth-Token' => $self->token ] );
     my $response = $self->_request($request);
     return if $response->code == 204;
     confess 'Unknown error' if $response->code != 200;
     my @containers;
 
-    foreach my $name ( split "\n", $response->content ) {
-        push @containers,
-            WebService::Rackspace::CloudFiles::Container->new(
-            cloudfiles => $self,
-            name       => $name,
-            );
+    foreach my $container_data ( @{JSON::Any->from_json($response->content)} ) {
+        push @containers, $self->container(%{$container_data});
     }
     return @containers;
 }
@@ -131,13 +133,15 @@ sub total_bytes_used {
 
 sub container {
     my ( $self, %conf ) = @_;
-    my $name = $conf{name};
-    confess 'Missing name' unless $name;
+    confess 'Missing name' unless $conf{name};
+    $conf{cloudfiles} = $self;
+    for (keys %conf){
+        if (ref $conf{$_} eq ref JSON::Any->true){
+            $conf{$_} = ($conf{$_} ? 'true' : 'false');
+        }
+    }
 
-    return WebService::Rackspace::CloudFiles::Container->new(
-        cloudfiles => $self,
-        name       => $name,
-    );
+    return WebService::Rackspace::CloudFiles::Container->new(%conf);
 }
 
 sub create_container {
@@ -320,14 +324,14 @@ you set the following three environment variables, along the lines of:
 
 L<WebService::Rackspace::CloudFiles::Container>, L<WebService::Rackspace::CloudFiles::Object>.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Fork by Christiaan Kras <ckras@cpan.org>
+Christiaan Kras <ckras@cpan.org>.
 L<Net::Mosso::CloudFiles> by Leon Brocard <acme@astray.com>.
 
 =head1 COPYRIGHT
 
-Copyright (C) 2010, Christiaan Kras
+Copyright (C) 2010-2011, Christiaan Kras
 Copyright (C) 2008-9, Leon Brocard
 
 =head1 LICENSE
