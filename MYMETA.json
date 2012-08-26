@@ -1,11 +1,10 @@
 {
    "abstract" : "Interface to Rackspace CloudFiles service",
    "author" : [
-      "Christiaan Kras <ckras@cpan.org>.",
-      "Christiaan Kras <ckras@cpan.org>"
+      "Christiaan Kras <ckras@cpan.org>., Christiaan Kras <ckras@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Install version 1.00, CPAN::Meta::Converter version 2.112150",
+   "generated_by" : "ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -16,37 +15,37 @@
    "name" : "WebService-Rackspace-CloudFiles",
    "no_index" : {
       "directory" : [
-         "inc",
-         "t"
+         "t",
+         "inc"
       ]
    },
    "prereqs" : {
       "build" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "6.42",
-            "File::Stat" : 0,
-            "Test::Exception" : 0,
-            "Test::More" : 0
+            "ExtUtils::MakeMaker" : "6.59",
+            "File::Stat" : "0",
+            "Test::Exception" : "0",
+            "Test::More" : "0"
          }
       },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker" : "6.42"
+            "ExtUtils::MakeMaker" : "0"
          }
       },
       "runtime" : {
          "requires" : {
-            "Crypt::SSLeay" : 0,
-            "Data::Stream::Bulk" : 0,
+            "Crypt::SSLeay" : "0",
+            "Data::Stream::Bulk" : "0",
             "DateTime::Format::HTTP" : "0.39",
-            "Digest::MD5" : 0,
-            "Digest::MD5::File" : 0,
-            "File::Slurp" : 0,
+            "Digest::MD5" : "0",
+            "Digest::MD5::File" : "0",
+            "File::Slurp" : "0",
             "JSON::Any" : "1.29",
-            "LWP" : 0,
-            "LWP::ConnCache::MaxKeepAliveRequests" : 0,
-            "LWP::Protocol::https" : 0,
-            "LWP::UserAgent::Determined" : 0,
+            "LWP" : "0",
+            "LWP::ConnCache::MaxKeepAliveRequests" : "0",
+            "LWP::Protocol::https" : "0",
+            "LWP::UserAgent::Determined" : "0",
             "Moose" : "2.0007",
             "MooseX::StrictConstructor" : "0.16",
             "URI" : "1.59",
@@ -55,16 +54,5 @@
       }
    },
    "release_status" : "stable",
-   "resources" : {
-      "bugtracker" : {
-         "web" : "http://github.com/Htbaa/WebService-Rackspace-CloudFiles/issues"
-      },
-      "license" : [
-         "http://dev.perl.org/licenses/"
-      ],
-      "repository" : {
-         "url" : "http://github.com/Htbaa/WebService-Rackspace-CloudFiles"
-      }
-   },
-   "version" : "1.03"
+   "version" : "1.05"
 }
