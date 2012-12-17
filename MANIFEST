@@ -20,6 +20,8 @@ META.yml
 MYMETA.json
 MYMETA.yml
 README
+t/location_url.t
+t/offline.t
 t/pod.t
 t/pod_coverage.t
 t/simple.t

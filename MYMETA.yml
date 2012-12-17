@@ -1,16 +1,18 @@
 ---
-abstract: Interface to Rackspace CloudFiles service
+abstract: 'Interface to Rackspace CloudFiles service'
 author:
-  - 'Christiaan Kras <ckras@cpan.org>., Christiaan Kras <ckras@cpan.org>'
+  - 'Christiaan Kras <ckras@cpan.org>.'
+  - 'Christiaan Kras <ckras@cpan.org>'
 build_requires:
   ExtUtils::MakeMaker: 6.59
   File::Stat: 0
   Test::Exception: 0
+  Test::LWP::UserAgent: 0
   Test::More: 0
 configure_requires:
-  ExtUtils::MakeMaker: 0
+  ExtUtils::MakeMaker: 6.59
 dynamic_config: 0
-generated_by: 'ExtUtils::MakeMaker version 6.6302, CPAN::Meta::Converter version 2.120921'
+generated_by: 'Module::Install version 1.06, CPAN::Meta::Converter version 2.120921'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -18,8 +20,8 @@ meta-spec:
 name: WebService-Rackspace-CloudFiles
 no_index:
   directory:
-    - t
     - inc
+    - t
 requires:
   Crypt::SSLeay: 0
   Data::Stream::Bulk: 0
@@ -36,4 +38,8 @@ requires:
   MooseX::StrictConstructor: 0.16
   URI: 1.59
   perl: 5.008008
-version: 1.05
+resources:
+  bugtracker: http://github.com/Htbaa/WebService-Rackspace-CloudFiles/issues
+  license: http://dev.perl.org/licenses/
+  repository: http://github.com/Htbaa/WebService-Rackspace-CloudFiles
+version: 1.06
