@@ -24,7 +24,6 @@
       "build" : {
          "requires" : {
             "ExtUtils::MakeMaker" : "6.59",
-            "File::Stat" : "0",
             "Test::Exception" : "0",
             "Test::LWP::UserAgent" : "0",
             "Test::More" : "0"
@@ -43,6 +42,7 @@
             "Digest::MD5" : "0",
             "Digest::MD5::File" : "0",
             "File::Slurp" : "0",
+            "File::stat" : "1.0",
             "JSON::Any" : "1.29",
             "LWP" : "0",
             "LWP::ConnCache::MaxKeepAliveRequests" : "0",
@@ -67,5 +67,5 @@
          "url" : "http://github.com/Htbaa/WebService-Rackspace-CloudFiles"
       }
    },
-   "version" : "1.06"
+   "version" : "1.07"
 }
