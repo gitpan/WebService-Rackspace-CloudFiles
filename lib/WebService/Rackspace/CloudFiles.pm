@@ -9,7 +9,7 @@ use LWP::ConnCache::MaxKeepAliveRequests;
 use LWP::UserAgent::Determined;
 use URI::QueryParam;
 use JSON::Any;
-our $VERSION = '1.09';
+our $VERSION = '1.10';
 
 my $DEBUG = 0;
 
@@ -42,7 +42,7 @@ has location_url => (
     default  => sub {
         my $self = shift;
 
-        return $self->locations->{$self->location} or
+        return $self->locations->{$self->location} ||
             confess "location $self->{location} unknown: valid locations are " .
                 join ', ', $self->location_names ;
     },
